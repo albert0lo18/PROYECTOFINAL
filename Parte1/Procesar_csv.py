@@ -19,7 +19,7 @@ def extraer_nombres_revista(ruta_archivo):
         try:
             with open(ruta_archivo, 'r', encoding=codificacion) as archivo_csv:
                 if os.path.basename(ruta_archivo) == 'ED_INST.csv':
-                    next(archivo_csv)  # Saltar la primera línea (encabezado)
+                    next(archivo_csv)  # Saltar la primera línea
                     for linea in archivo_csv:
                         partes = linea.strip().split(',')
                         if len(partes) == 2:
@@ -98,7 +98,20 @@ def guardar_json(diccionario, ruta_archivo):
     with open(ruta_archivo, 'w') as archivo_json:
         json.dump(diccionario, archivo_json, indent=4)
 
+def leer_json(ruta_archivo):
+    """
+    Lee el diccionario desde un archivo JSON e imprime su contenido.
+    """
+    try:
+        with open(ruta_archivo, 'r') as archivo_json:
+            diccionario_leido = json.load(archivo_json)
+        print("\nContenido del archivo JSON:")
+        print(json.dumps(diccionario_leido, indent=4, ensure_ascii=False))  
+    except Exception as e:
+        print(f"Error al leer el archivo JSON: {e}")
+
 if __name__ == "__main__":
     diccionario_final = generar_diccionario_revistas()
     guardar_json(diccionario_final, RUTA_JSON)
     print(f"Archivo JSON guardado en: {RUTA_JSON}")
+    leer_json(RUTA_JSON)
