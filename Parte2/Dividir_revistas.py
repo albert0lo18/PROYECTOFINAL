@@ -32,3 +32,4 @@ def guardar(nombre_archivo, contenido):
 guardar('revistas_pinela.json', revistas_pinela)
 guardar('revistas_chavarin.json', revistas_chavarin)
 guardar('revistas_urias.json', revistas_urias)
+
