@@ -1,0 +1,74 @@
+:root {
+    --unison-blue: #003366;
+    --unison-gold: #C69214;
+    --unison-blue-light: #1a4d80;
+    --unison-gold-light: #e0b34a;
+}
+
+.bg-unison {
+    background-color: var(--unison-blue) !important;
+}
+
+.bg-unison-light {
+    background-color: var(--unison-blue-light) !important;
+}
+
+.text-unison {
+    color: var(--unison-blue) !important;
+}
+
+.text-unison-gold {
+    color: var(--unison-gold) !important;
+}
+
+.btn-outline-unison {
+    color: var(--unison-blue);
+    border-color: var(--unison-blue);
+}
+
+.btn-outline-unison:hover {
+    color: #fff;
+    background-color: var(--unison-blue);
+    border-color: var(--unison-blue);
+}
+
+.btn-outline-unison-light {
+    color: var(--unison-gold);
+    border-color: var(--unison-gold);
+}
+
+.btn-outline-unison-light:hover {
+    color: #fff;
+    background-color: var(--unison-gold);
+    border-color: var(--unison-gold);
+}
+
+.logo-unison {
+    height: 50px;
+    margin-left: 20px;
+}
+
+.footer {
+    background-color: var(--unison-blue);
+}
+
+.abc-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.badge.bg-unison-light {
+    color: white;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.card {
+    border: 1px solid rgba(0, 51, 102, 0.125);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 51, 102, 0.075);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 51, 102, 0.125);
+}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-unison text-white">
+                <h2>Créditos</h2>
+            </div>
+            <div class="card-body">
+                <p>Este sistema fue desarrollado por:</p>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Foto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dev in desarrolladores %}
+                        <tr>
+                            <td>{{ dev['nombre'] }}</td>
+                            <td>
+                                {% if dev['foto'] %}
+                                <img src="{{ url_for('static', filename='images/' + dev['foto']) }}" alt="{{ dev['nombre'] }}" class="img-thumbnail" style="width: 100px;">
+                                {% else %}
+                                Sin foto
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

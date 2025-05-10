@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-unison text-white">
+                <h2>Catálogos de Revistas</h2>
+            </div>
+            <div class="card-body">
+                <p>Seleccione un catálogo para ver las revistas relacionadas:</p>
+                <div class="list-group">
+                    {% for catalogo in catalogos %}
+                    <a href="{{ url_for('catalogo_detail', catalogo_name=catalogo) }}" class="list-group-item list-group-item-action">
+                        {{ catalogo }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
