@@ -60,15 +60,8 @@ def extraer_info_revista(url):
         input_tag = soup.select_one('#embed_code')
         return input_tag['value'] if input_tag else None
 
-    def extraer_sitio_web():
-        for a in soup.find_all('a', href=True):
-            href = a['href']
-            if href.startswith('http') and 'scimago' not in href:
-                return href
-        return None
-
     return {
-        "sitio_web": extraer_sitio_web(),
+        "sitio_web": url,
         "h_index": extraer_hindex(),
         "subject_area": extraer_subject_area(),
         "publisher": extraer_por_titulo("Publisher"),
