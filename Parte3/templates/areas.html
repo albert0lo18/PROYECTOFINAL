@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-unison text-white">
+                <h2>Áreas Temáticas</h2>
+            </div>
+            <div class="card-body">
+                <p>Seleccione un área temática para ver las revistas relacionadas:</p>
+                <div class="list-group">
+                    {% for area in areas %}
+                    <a href="{{ url_for('area_detail', area_name=area) }}" class="list-group-item list-group-item-action">
+                        {{ area }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

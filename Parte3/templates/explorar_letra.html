@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-unison text-white">
+                <h2>Revistas que comienzan con "{{ letra }}"</h2>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Áreas</th>
+                            <th>Catálogos</th>
+                            <th>H-Index</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for revista in revistas %}
+                        <tr>
+                            <td><a href="{{ url_for('revista', titulo=revista['titulo']) }}">{{ revista['titulo'] }}</a></td>
+                            <td>
+                                {% for area in revista['areas'] %}
+                                <a href="{{ url_for('area_detail', area_name=area) }}" class="badge bg-unison-light">{{ area }}</a>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for catalogo in revista['catalogos'] %}
+                                <a href="{{ url_for('catalogo_detail', catalogo_name=catalogo) }}" class="badge bg-unison-light">{{ catalogo }}</a>
+                                {% endfor %}
+                            </td>
+                            <td>{{ revista['h_index'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
