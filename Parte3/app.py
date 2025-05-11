@@ -1,12 +1,34 @@
 from flask import Flask, render_template, request, jsonify
 import json
+import os
 from collections import defaultdict
+from datetime import datetime
+
 
 app = Flask(__name__)
 
+RUTA_BASE = os.path.join('..', 'parte1', 'datos', 'json', 'revistas.json')
+RUTA_INFO = os.path.join('..', 'parte2', 'datos_scrap', 'revistas_info.json')
+
+
 # Cargar datos de revistas
-with open('datos/revistas_info.json', 'r', encoding='utf-8') as f:
+with open(RUTA_BASE, 'r', encoding='utf-8') as f:
+    revistas = json.load(f)
+
+with open(RUTA_INFO, 'r', encoding='utf-8') as f:
     revistas_data = json.load(f)
+
+AREAS = set()
+CATALOGOS = set()
+
+for revista_data in revistas.values():
+    for area in revista_data.get('areas', []):
+        AREAS.add(area)
+    for catalogo in revista_data.get('catalogos', []):
+        CATALOGOS.add(catalogo)
+
+AREAS = sorted(list(AREAS))
+CATALOGOS = sorted(list(CATALOGOS))
 
 # Preprocesar datos para búsquedas más eficientes
 def preprocess_data():
@@ -69,23 +91,43 @@ def index():
 
 @app.route('/areas')
 def areas():
-    areas_list = sorted(areas_data.keys())
-    return render_template('areas.html', areas=areas_list)
+    return render_template('areas.html', areas=AREAS)
 
 @app.route('/area/<area_name>')
 def area_detail(area_name):
-    revistas = areas_data.get(area_name, [])
-    return render_template('area_detail.html', area_name=area_name, revistas=revistas)
+    revistas_area = []
+    
+    for titulo, datos in revistas.items():
+        if area in datos.get('areas', []):
+            h_index = datos.get('scimago_info', {}).get('h_index', 'N/A')
+            revistas_area.append({
+                'titulo': titulo,
+                'h_index': h_index
+            })
+    
+    revistas_area.sort(key=lambda x: x['titulo'])
+    
+    return render_template('area_detail.html', area=area, revistas=revistas_area, now=datetime.now())
 
 @app.route('/catalogos')
 def catalogos():
-    catalogos_list = sorted([k for k in catalogos_data.keys() if k is not None])
-    return render_template('catalogos.html', catalogos=catalogos_list)
+    return render_template('catalogos.html', catalogos=CATALOGOS)
 
-@app.route('/catalogo/<catalogo_name>')
-def catalogo_detail(catalogo_name):
-    revistas = catalogos_data.get(catalogo_name, [])
-    return render_template('catalogo_detail.html', catalogo_name=catalogo_name, revistas=revistas)
+@app.route('/catalogo/<catalogo>')
+def catalogo_detail(catalogo):
+        revistas_catalogo = []
+    
+        for titulo, datos in revistas.items():
+            if catalogo in datos.get('catalogos', []):
+                h_index = datos.get('scimago_info', {}).get('h_index', 'N/A')
+                revistas_catalogo.append({
+                    'titulo': titulo,
+                    'h_index': h_index
+                })
+        
+        revistas_catalogo.sort(key=lambda x: x['titulo'])
+        
+        return render_template('catalogo_detail.html', catalogo=catalogo, revistas=revistas_catalogo)
 
 @app.route('/explorar')
 def explorar():
@@ -134,6 +176,8 @@ def creditos():
         {'nombre': 'Kevin Alejandro Urias Ramirez', 'foto': 'foto3.jpg'}
     ]
     return render_template('creditos.html', desarrolladores=desarrolladores)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

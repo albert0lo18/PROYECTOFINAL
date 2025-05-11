@@ -70,4 +70,3 @@ except KeyboardInterrupt:
 guardar_json(datos_existentes, RUTA_SALIDA)
 guardar_json(revistas_descartadas, RUTA_DESCARTADAS)
 print(f"✅ Scraping completo. {procesadas} procesadas, {fallidas} descartadas.")
-

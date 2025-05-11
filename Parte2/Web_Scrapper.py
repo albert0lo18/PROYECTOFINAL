@@ -14,7 +14,7 @@ def cargar_json(path):
         return json.load(f)
 
 def guardar_json(data, path):
-    with open(path, 'w', encoding='latin-1') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 def buscar_url_revista(nombre_revista):
