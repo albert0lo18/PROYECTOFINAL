@@ -12,10 +12,10 @@ RUTA_INFO = os.path.join('..', 'parte2', 'datos_scrap', 'revistas_info.json')
 
 
 # Cargar datos de revistas
-with open(RUTA_BASE, 'r', encoding='utf-8') as f:
+with open(RUTA_BASE, 'r', encoding='latin-1') as f:
     revistas = json.load(f)
 
-with open(RUTA_INFO, 'r', encoding='utf-8') as f:
+with open(RUTA_INFO, 'r', encoding='latin-1') as f:
     revistas_data = json.load(f)
 
 AREAS = set()
@@ -96,18 +96,19 @@ def areas():
 @app.route('/area/<area_name>')
 def area_detail(area_name):
     revistas_area = []
-    
+
     for titulo, datos in revistas.items():
-        if area in datos.get('areas', []):
-            h_index = datos.get('scimago_info', {}).get('h_index', 'N/A')
+        if area_name in datos.get('areas', []) and titulo in revistas_data:
+            info = revistas_data[titulo]
+            h_index = info.get('h_index', 'N/A')
             revistas_area.append({
                 'titulo': titulo,
                 'h_index': h_index
             })
-    
+
     revistas_area.sort(key=lambda x: x['titulo'])
-    
-    return render_template('area_detail.html', area=area, revistas=revistas_area, now=datetime.now())
+
+    return render_template('area_detail.html', area=area_name, revistas=revistas_area, now=datetime.now())
 
 @app.route('/catalogos')
 def catalogos():
@@ -115,19 +116,20 @@ def catalogos():
 
 @app.route('/catalogo/<catalogo>')
 def catalogo_detail(catalogo):
-        revistas_catalogo = []
-    
-        for titulo, datos in revistas.items():
-            if catalogo in datos.get('catalogos', []):
-                h_index = datos.get('scimago_info', {}).get('h_index', 'N/A')
-                revistas_catalogo.append({
-                    'titulo': titulo,
-                    'h_index': h_index
-                })
-        
-        revistas_catalogo.sort(key=lambda x: x['titulo'])
-        
-        return render_template('catalogo_detail.html', catalogo=catalogo, revistas=revistas_catalogo)
+    revistas_catalogo = []
+
+    for titulo, datos in revistas.items():
+        if catalogo in datos.get('catalogos', []) and titulo in revistas_data:
+            info = revistas_data[titulo]
+            h_index = info.get('h_index', 'N/A')
+            revistas_catalogo.append({
+                'titulo': titulo,
+                'h_index': h_index
+            })
+
+    revistas_catalogo.sort(key=lambda x: x['titulo'])
+
+    return render_template('catalogo_detail.html', catalogo=catalogo, revistas=revistas_catalogo)
 
 @app.route('/explorar')
 def explorar():

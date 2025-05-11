@@ -13,7 +13,7 @@
                         <h4>Información General</h4>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><strong>H-Index:</strong> {{ revista['h_index'] }}</li>
-                            <li class="list-group-item"><strong>Editorial:</strong> <a href="{{ url_for('catalogo_detail', catalogo_name=revista['publisher']) }}">{{ revista['publisher'] }}</a></li>
+                            <li class="list-group-item"><strong>Editorial:</strong> <a href="{{ url_for('catalogo_detail', catalogo=revista['publisher']) }}">{{ revista['publisher'] }}</a></li>
                             <li class="list-group-item"><strong>ISSN:</strong> {{ revista['issn'] }}</li>
                             <li class="list-group-item"><strong>Tipo de publicación:</strong> {{ revista['publication_type'] }}</li>
                             <li class="list-group-item"><strong>Sitio web:</strong> <a href="{{ revista['sitio_web'] }}" target="_blank">{{ revista['sitio_web'] }}</a></li>
@@ -23,7 +23,7 @@
                         <h4>Áreas Temáticas</h4>
                         <div class="d-flex flex-wrap">
                             {% for area in revista['subject_area'] %}
-                            <a href="{{ url_for('area_detail', area_name=area) }}" class="badge bg-unison-light m-1">{{ area }}</a>
+                        <span class="badge bg-unison-light m-1" style="color: black;">{{ area }}</span>
                             {% endfor %}
                         </div>
                         <h4 class="mt-4">Ranking SCImago</h4>
