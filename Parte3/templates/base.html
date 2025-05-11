@@ -4,8 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Revista Explorer - Universidad de Sonora</title>
-      
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+        <style>
+        :root {
+            --unison-blue: #003366;         /* Azul institucional */
+            --unison-gold: #C69214;         /* Dorado institucional */
+            --unison-blue-light: #1a4d80;   /* Azul claro */
+            --unison-gold-light: #e0b34a;   /* Dorado claro */
+            --unison-navbar: #003366;       /* Color de la barra de navegación */
+            --unison-menu-hover: #C69214;   /* Color hover del menú */
+        }
+
+        /* Barra de navegación principal */
+        .navbar {
+            background-color: var(--unison-navbar) !important;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Logo de la universidad */
+        .logo-unison {
+            height: 50px;
+            margin-left: 20px;
+        }
+
+        /* Elementos del menú */
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+            font-size: 1.25rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            background-color: var(--unison-menu-hover);
+            border-radius: 4px;
+        }
+
+        /* Botón de búsqueda */
+        .btn-outline-unison-light {
+            color: var(--unison-gold);
+            border-color: var(--unison-gold);
+        }
+
+        .btn-outline-unison-light:hover {
+            color: white;
+            background-color: var(--unison-gold);
+        }
+
+        /* Contenido principal */
+        body {
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--unison-navbar);
+            color: white;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+
+        /* Efecto para botones del abecedario */
+        .abc-list .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Menú desplegable en móviles */
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar corregido -->
@@ -36,7 +122,6 @@
                     <input class="form-control me-2" type="search" name="q" placeholder="Buscar revistas...">
                     <button class="btn btn-outline-light" type="submit">Buscar</button>
                 </form>
-                
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('creditos') }}">Créditos</a>
@@ -65,13 +150,13 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.table').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
-                }
-            });
+    $(document).ready(function() {
+        $('.table').not('.no-datatables').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
+            }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
