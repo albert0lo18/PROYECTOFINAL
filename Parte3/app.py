@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import json
 import os
 from collections import defaultdict
 from datetime import datetime
 
 
+
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 RUTA_BASE = os.path.join('..', 'parte1', 'datos', 'json', 'revistas.json')
 RUTA_INFO = os.path.join('..', 'parte2', 'datos_scrap', 'revistas_info.json')
@@ -178,7 +180,30 @@ def creditos():
     ]
     return render_template('creditos.html', desarrolladores=desarrolladores)
 
+#Funcionabilidad extra inicio de sesion y guardado de favoritos
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Página de login"""
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # Autenticación simple (en producción usar base de datos)
+        if username and password:
+            session['usuario'] = username
+            flash(f'Bienvenido, {username}!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Usuario o contraseña incorrectos', 'danger')
+    
+    return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    """Cerrar sesión"""
+    session.pop('usuario', None)
+    flash('Sesión cerrada correctamente', 'success')
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
