@@ -205,5 +205,28 @@ def logout():
     flash('Sesión cerrada correctamente', 'success')
     return redirect(url_for('index'))
 
+@app.route('/favoritos')
+def favoritos():
+    """Revistas favoritas del usuario"""
+    if 'usuario' not in session:
+        flash('Debe iniciar sesión para ver sus favoritos', 'warning')
+        return redirect(url_for('login'))
+    
+    # Obtener favoritos del usuario (en producción usar base de datos)
+    favoritos = session.get('favoritos', [])
+    
+    revistas_favoritas = []
+    for titulo in favoritos:
+        if titulo in REVISTAS:
+            h_index = REVISTAS[titulo].get('scimago_info', {}).get('h_index', 'N/A')
+            revistas_favoritas.append({
+                'titulo': titulo,
+                'areas': REVISTAS[titulo].get('areas', []),
+                'catalogos': REVISTAS[titulo].get('catalogos', []),
+                'h_index': h_index
+            })
+    
+    return render_template('favoritos.html', favoritos=revistas_favoritas)
+
 if __name__ == '__main__':
     app.run(debug=True)
