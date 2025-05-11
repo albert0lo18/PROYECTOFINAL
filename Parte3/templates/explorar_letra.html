@@ -28,7 +28,7 @@
                             </td>
                             <td>
                                 {% for catalogo in revista['catalogos'] %}
-                                <a href="{{ url_for('catalogo_detail', catalogo_name=catalogo) }}" class="badge bg-unison-light text-black">{{ catalogo }}</a>
+                                <a href="{{ url_for('catalogo_detail', catalogo=catalogo) }}" class="badge bg-unison-light text-black">{{ catalogo }}</a>
                                 {% endfor %}
                             </td>
                             <td>{{ revista['h_index'] }}</td>

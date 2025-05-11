@@ -58,13 +58,12 @@ def preprocess_data():
                     'titulo': titulo,
                     'h_index': h_index
                 })
-        
-        # Procesar catálogos
-        catalogos[publisher].append({
-            'titulo': titulo,
-            'h_index': h_index
-        })
-        
+        catalogos_raw = revistas.get(titulo, {}).get('catalogos', [])
+        if isinstance(catalogos_raw, str):
+            catalogos_reales = [c.strip() for c in catalogos_raw.split(',')]
+        else:
+            catalogos_reales = catalogos_raw
+
         # Procesar letras iniciales
         if titulo:  # Asegurarse que el título no esté vacío
             letra_inicial = titulo[0].upper()
@@ -73,7 +72,7 @@ def preprocess_data():
                     'titulo': titulo,
                     'h_index': h_index,
                     'areas': subject_areas,
-                    'catalogos': [publisher]
+                    'catalogos': [catalogos_reales]
                 })
     
     # Asegurarnos de que todas las letras existan, aunque estén vacías
