@@ -12,7 +12,7 @@
                 <div class="abc-list d-flex flex-wrap justify-content-center">
                     {% for letra in letras %}
                     <a href="{{ url_for('explorar_letra', letra=letra) }}" 
-                       class="btn btn-outline-unison m-1 {% if not letras[letra] %}disabled{% endif %}" 
+                       class="btn btn-outline-unison m-1 {% if not letras[letra] %}{% endif %}" 
                        style="min-width: 40px;">
                         {{ letra }}
                     </a>

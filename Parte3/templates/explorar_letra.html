@@ -23,12 +23,12 @@
                             <td><a href="{{ url_for('revista', titulo=revista['titulo']) }}">{{ revista['titulo'] }}</a></td>
                             <td>
                                 {% for area in revista['areas'] %}
-                                <a href="{{ url_for('area_detail', area_name=area) }}" class="badge bg-unison-light">{{ area }}</a>
+                                <a href="{{ url_for('area_detail', area_name=area) }}" class="badge bg-unison-light text-black">{{ area }}</a>
                                 {% endfor %}
                             </td>
                             <td>
                                 {% for catalogo in revista['catalogos'] %}
-                                <a href="{{ url_for('catalogo_detail', catalogo_name=catalogo) }}" class="badge bg-unison-light">{{ catalogo }}</a>
+                                <a href="{{ url_for('catalogo_detail', catalogo_name=catalogo) }}" class="badge bg-unison-light text-black">{{ catalogo }}</a>
                                 {% endfor %}
                             </td>
                             <td>{{ revista['h_index'] }}</td>
