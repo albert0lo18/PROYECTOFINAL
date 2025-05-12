@@ -141,12 +141,25 @@ def explorar():
 
 @app.route('/explorar/<letra>')
 def explorar_letra(letra):
-    # Validar que la letra sea una sola letra mayúscula A-Z
     if len(letra) != 1 or not letra.isalpha() or not letra.isupper():
         return "Letra no válida", 400
-        
-    revistas = letras_data.get(letra, [])
-    return render_template('explorar_letra.html', letra=letra, revistas=revistas)
+
+    revistas_letra = letras_data.get(letra, [])
+    revistas_resultado = []
+
+    for r in revistas_letra:
+        titulo = r['titulo']
+        info_revista = revistas.get(titulo, {})
+        info_scrap = revistas_data.get(titulo, {})
+
+        revistas_resultado.append({
+            'titulo': titulo,
+            'h_index': info_scrap.get('h_index', 'N/A'),
+            'areas': info_revista.get('areas', []),         # <- áreas correctas de revistas.json
+            'catalogos': info_revista.get('catalogos', [])
+        })
+
+    return render_template('explorar_letra.html', letra=letra, revistas=revistas_resultado)
 
 @app.route('/busqueda')
 def busqueda():

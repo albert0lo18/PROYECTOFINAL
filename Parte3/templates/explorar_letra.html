@@ -23,7 +23,7 @@
                             <td><a href="{{ url_for('revista', titulo=revista['titulo']) }}">{{ revista['titulo'] }}</a></td>
                             <td>
                                 {% for area in revista['areas'] %}
-                                <a href="{{ url_for('area_detail', area_name=area) }}" class="badge bg-unison-light text-black">{{ area }}</a>
+                                <a href="{{ url_for('area_detail', area_name=area) }}" class="badge bg-secondary text-decoration-none text-white">{{area}}</a>
                                 {% endfor %}
                             </td>
                             <td>
