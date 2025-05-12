@@ -136,12 +136,18 @@
     .dropdown-menu a:hover {
         text-decoration: underline;
     }
+    .logo-revista {
+        height: 90px;
+        margin-right: 0px;
+    }
     </style>
 </head>
 <body>
     <!-- Navbar corregido -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-unison fixed-top">
         <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/logo_revista.png') }}" alt="Logo Revista" class="logo-revista">
             <a class="navbar-brand" href="{{ url_for('index') }}">Revista Explorer</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>

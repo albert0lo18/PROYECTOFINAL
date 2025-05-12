@@ -205,6 +205,7 @@ def logout():
     flash('Sesión cerrada correctamente', 'success')
     return redirect(url_for('index'))
 
+# Manejo de favoritos en sesión
 @app.route('/favoritos')
 def favoritos():
     """Revistas favoritas del usuario"""
@@ -212,21 +213,68 @@ def favoritos():
         flash('Debe iniciar sesión para ver sus favoritos', 'warning')
         return redirect(url_for('login'))
     
-    # Obtener favoritos del usuario (en producción usar base de datos)
-    favoritos = session.get('favoritos', [])
+    # Obtener favoritos del usuario actual desde la sesión
+    usuario = session['usuario']
+    favoritos = session.get(f'favoritos_{usuario}', [])
     
     revistas_favoritas = []
     for titulo in favoritos:
-        if titulo in REVISTAS:
-            h_index = REVISTAS[titulo].get('scimago_info', {}).get('h_index', 'N/A')
+        if titulo in revistas:
+            h_index = revistas[titulo].get('scimago_info', {}).get('h_index', 'N/A')
             revistas_favoritas.append({
                 'titulo': titulo,
-                'areas': REVISTAS[titulo].get('areas', []),
-                'catalogos': REVISTAS[titulo].get('catalogos', []),
+                'areas': revistas[titulo].get('areas', []),
+                'catalogos': revistas[titulo].get('catalogos', []),
                 'h_index': h_index
             })
     
     return render_template('favoritos.html', favoritos=revistas_favoritas)
 
+@app.route('/favoritos/agregar/<titulo>')
+def agregar_favorito(titulo):
+    """Agregar revista a favoritos"""
+    if 'usuario' not in session:
+        flash('Debe iniciar sesión para agregar favoritos', 'warning')
+        return redirect(url_for('login'))
+    
+    usuario = session['usuario']
+    favoritos = session.get(f'favoritos_{usuario}', [])
+    
+    if titulo not in favoritos:
+        favoritos.append(titulo)
+        session[f'favoritos_{usuario}'] = favoritos
+        flash(f'"{titulo}" agregada a favoritos', 'success')
+    else:
+        flash(f'"{titulo}" ya está en favoritos', 'info')
+    
+    return redirect(url_for('revista', titulo=titulo))
+
+@app.route('/favoritos/eliminar/<titulo>')
+def eliminar_favorito(titulo):
+    """Eliminar revista de favoritos"""
+    if 'usuario' not in session:
+        flash('Debe iniciar sesión para gestionar favoritos', 'warning')
+        return redirect(url_for('login'))
+    
+    usuario = session['usuario']
+    favoritos = session.get(f'favoritos_{usuario}', [])
+    
+    if titulo in favoritos:
+        favoritos.remove(titulo)
+        session[f'favoritos_{usuario}'] = favoritos
+        flash(f'"{titulo}" eliminada de favoritos', 'success')
+    else:
+        flash(f'"{titulo}" no está en favoritos', 'info')
+    
+    return redirect(url_for('favoritos'))
+
+# Filtros personalizados
+@app.template_filter('capitalize_each')
+def capitalize_each(s):
+    """Capitaliza cada palabra en una cadena"""
+    return ' '.join(word.capitalize() for word in s.split('_'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
+    

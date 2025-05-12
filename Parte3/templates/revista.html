@@ -8,6 +8,25 @@
                 <h2>{{ titulo }}</h2>
             </div>
             <div class="card-body">
+<div>
+            {% if session.get('usuario') %}
+                {% if titulo in session.get('favoritos', []) %}
+                <a href="{{ url_for('eliminar_favorito', titulo=titulo) }}" class="btn btn-sm btn-warning me-2">
+                    <i class="fas fa-star me-1"></i> Quitar de Favoritos
+                </a>
+                {% else %}
+                <a href="{{ url_for('agregar_favorito', titulo=titulo) }}" class="btn btn-sm btn-outline-warning me-2">
+                    <i class="fas fa-star me-1"></i> Agregar a Favoritos
+                </a>
+                {% endif %}
+            {% endif %}
+            <button onclick="history.back()" class="btn btn-sm btn-outline-light">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+            </button>
+        </div>
+    </div> 
+</form>
+
                 <div class="row">
                     <div class="col-md-6">
                         <h4>Información General</h4>
