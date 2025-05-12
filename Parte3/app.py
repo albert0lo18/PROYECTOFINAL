@@ -11,6 +11,8 @@ app.secret_key = os.urandom(24)
 
 RUTA_BASE = os.path.join('..', 'parte1', 'datos', 'json', 'revistas.json')
 RUTA_INFO = os.path.join('..', 'parte2', 'datos_scrap', 'revistas_info.json')
+RUTA_FAVORITOS = os.path.join('..', 'parte3', 'datos', 'favoritos.json')
+RUTA_USUARIOS = os.path.join('..', 'parte3', 'datos', 'usuarios.json')
 
 
 # Cargar datos de revistas
@@ -169,7 +171,15 @@ def revista(titulo):
     revista = revistas_data.get(titulo)
     if not revista:
         return "Revista no encontrada", 404
-    return render_template('revista.html', revista=revista, titulo=titulo)
+
+    es_favorita = False
+    if 'usuario' in session and os.path.exists(RUTA_FAVORITOS):
+        with open(RUTA_FAVORITOS, 'r', encoding='latin-1') as f:
+            favoritos = json.load(f)
+        usuario = session['usuario']
+        es_favorita = titulo in favoritos.get(usuario, [])
+
+    return render_template('revista.html', revista=revista, titulo=titulo, es_favorita=es_favorita)
 
 @app.route('/creditos')
 def creditos():
@@ -180,101 +190,145 @@ def creditos():
     ]
     return render_template('creditos.html', desarrolladores=desarrolladores)
 
-#Funcionabilidad extra inicio de sesion y guardado de favoritos
+#Sistema de loggin/loggout
+
+
+
+#registro
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        password = request.form['password']
+
+        if not usuario or not password:
+            flash("Todos los campos son obligatorios", "danger")
+            return redirect(url_for('registro'))
+
+        if os.path.exists(RUTA_USUARIOS):
+            with open(RUTA_USUARIOS, 'r', encoding='latin-1') as f:
+                usuarios = json.load(f)
+        else:
+            usuarios = {}
+
+        if usuario in usuarios:
+            flash("Ese nombre de usuario ya existe", "warning")
+            return redirect(url_for('registro'))
+
+        usuarios[usuario] = password
+        with open(RUTA_USUARIOS, 'w', encoding='latin-1') as f:
+            json.dump(usuarios, f, indent=2, ensure_ascii=False)
+
+        flash("Registro exitoso, ahora puedes iniciar sesión", "success")
+        return redirect(url_for('login'))
+
+    return render_template('registro.html')
+
+#login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Página de login"""
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        # Autenticación simple (en producción usar base de datos)
-        if username and password:
-            session['usuario'] = username
-            flash(f'Bienvenido, {username}!', 'success')
+        usuario = request.form['usuario']
+        password = request.form['password']
+
+        if os.path.exists(RUTA_USUARIOS):
+            with open(RUTA_USUARIOS, 'r', encoding='latin-1') as f:
+                usuarios = json.load(f)
+        else:
+            usuarios = {}
+
+        if usuario in usuarios and usuarios[usuario] == password:
+            session['usuario'] = usuario
+            flash('Bienvenido, ' + usuario, 'success')
             return redirect(url_for('index'))
         else:
             flash('Usuario o contraseña incorrectos', 'danger')
-    
+
     return render_template('login.html')
 
+#logout
 @app.route('/logout')
 def logout():
-    """Cerrar sesión"""
     session.pop('usuario', None)
     flash('Sesión cerrada correctamente', 'success')
     return redirect(url_for('index'))
 
-# Manejo de favoritos en sesión
-@app.route('/favoritos')
-def favoritos():
-    """Revistas favoritas del usuario"""
-    if 'usuario' not in session:
-        flash('Debe iniciar sesión para ver sus favoritos', 'warning')
-        return redirect(url_for('login'))
-    
-    # Obtener favoritos del usuario actual desde la sesión
-    usuario = session['usuario']
-    favoritos = session.get(f'favoritos_{usuario}', [])
-    
-    revistas_favoritas = []
-    for titulo in favoritos:
-        if titulo in revistas:
-            h_index = revistas[titulo].get('scimago_info', {}).get('h_index', 'N/A')
-            revistas_favoritas.append({
-                'titulo': titulo,
-                'areas': revistas[titulo].get('areas', []),
-                'catalogos': revistas[titulo].get('catalogos', []),
-                'h_index': h_index
-            })
-    
-    return render_template('favoritos.html', favoritos=revistas_favoritas)
-
-@app.route('/favoritos/agregar/<titulo>')
+#agregar favoritos
+@app.route('/favoritos/agregar/<titulo>', methods=['POST'])
 def agregar_favorito(titulo):
-    """Agregar revista a favoritos"""
     if 'usuario' not in session:
-        flash('Debe iniciar sesión para agregar favoritos', 'warning')
+        flash('Debe iniciar sesión', 'warning')
         return redirect(url_for('login'))
-    
+
     usuario = session['usuario']
-    favoritos = session.get(f'favoritos_{usuario}', [])
-    
-    if titulo not in favoritos:
-        favoritos.append(titulo)
-        session[f'favoritos_{usuario}'] = favoritos
-        flash(f'"{titulo}" agregada a favoritos', 'success')
-    else:
-        flash(f'"{titulo}" ya está en favoritos', 'info')
-    
+    favoritos = {}
+    if os.path.exists(RUTA_FAVORITOS):
+        with open(RUTA_FAVORITOS, 'r', encoding='latin-1') as f:
+            favoritos = json.load(f)
+
+    favoritos.setdefault(usuario, [])
+    if titulo not in favoritos[usuario]:
+        favoritos[usuario].append(titulo)
+
+    with open(RUTA_FAVORITOS, 'w', encoding='latin-1') as f:
+        json.dump(favoritos, f, indent=2, ensure_ascii=False)
+
+    flash(f'Revista \"{titulo}\" añadida a tus favoritos.', 'success')
     return redirect(url_for('revista', titulo=titulo))
 
+#eliminar favoritos
 @app.route('/favoritos/eliminar/<titulo>')
 def eliminar_favorito(titulo):
-    """Eliminar revista de favoritos"""
     if 'usuario' not in session:
-        flash('Debe iniciar sesión para gestionar favoritos', 'warning')
+        flash('Debe iniciar sesión', 'warning')
         return redirect(url_for('login'))
-    
+
     usuario = session['usuario']
-    favoritos = session.get(f'favoritos_{usuario}', [])
-    
-    if titulo in favoritos:
-        favoritos.remove(titulo)
-        session[f'favoritos_{usuario}'] = favoritos
-        flash(f'"{titulo}" eliminada de favoritos', 'success')
-    else:
-        flash(f'"{titulo}" no está en favoritos', 'info')
-    
+    favoritos = {}
+    if os.path.exists(RUTA_FAVORITOS):
+        with open(RUTA_FAVORITOS, 'r', encoding='latin-1') as f:
+            favoritos = json.load(f)
+
+    if usuario in favoritos and titulo in favoritos[usuario]:
+        favoritos[usuario].remove(titulo)
+
+        with open(RUTA_FAVORITOS, 'w', encoding='latin-1') as f:
+            json.dump(favoritos, f, indent=2, ensure_ascii=False)
+
+        flash(f'Revista \"{titulo}\" eliminada de favoritos.', 'info')
     return redirect(url_for('favoritos'))
+
+#ver favoritos
+@app.route('/favoritos')
+def favoritos():
+    if 'usuario' not in session:
+        flash('Debe iniciar sesión para ver favoritos', 'warning')
+        return redirect(url_for('login'))
+
+    usuario = session['usuario']
+    favoritos = {}
+    if os.path.exists(RUTA_FAVORITOS):
+        with open(RUTA_FAVORITOS, 'r', encoding='latin-1') as f:
+            favoritos = json.load(f)
+
+    favoritos_usuario = favoritos.get(usuario, [])
+
+    revistas_favoritas = [
+        {
+            'titulo': t,
+            'areas': revistas.get(t, {}).get('areas', []),
+            'catalogos': revistas.get(t, {}).get('catalogos', []),
+            'h_index': revistas_data.get(t, {}).get('h_index', 'N/A')
+        }
+        for t in favoritos_usuario if t in revistas_data
+    ]
+
+    return render_template('favoritos.html', favoritos=revistas_favoritas)
 
 # Filtros personalizados
 @app.template_filter('capitalize_each')
 def capitalize_each(s):
     """Capitaliza cada palabra en una cadena"""
-    return ' '.join(word.capitalize() for word in s.split('_'))
-
 
 if __name__ == '__main__':
     app.run(debug=True)
-    

@@ -1,72 +1,23 @@
-{% extends 'base.html' %}
-
-{% block title %}Mis Favoritos - Catálogo de Revistas Académicas UNISON{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="card shadow-sm">
-    <div class="card-header">
-        <h1 class="h3 mb-0">Mis Revistas Favoritas</h1>
-    </div>
-    <div class="card-body">
-        <p class="lead">Revistas que ha guardado como favoritas.</p>
-        
-        {% if favoritos is defined and favoritos %}
-        <div class="table-responsive">
-            <table class="table table-hover datatable">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Título de la Revista</th>
-                        <th>Áreas</th>
-                        <th>Catálogos</th>
-                        <th>H-Index</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for revista in favoritos %}
-                    <tr>
-                        <td>{{ revista.titulo|capitalize }}</td>
-                        <td>
-                            {% for area in revista.areas %}
-                            <a href="{{ url_for('area_detail', area_name=area) if area is defined else '#' }}" class="badge bg-primary text-decoration-none me-1">
-    {{ area|title }}
-                            </a>
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% for catalogo in revista.catalogos %}
-                            <a href="{{ url_for('catalogo_detail', catalogo=catalogo) if catalogo is defined else '#' }}" class="badge bg-warning text-dark text-decoration-none me-1">
-                                {{ catalogo }}
-                            </a>
-                            {% endfor %}
-                        </td>
-                        <td>{{ revista.h_index }}</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                    <a href="{{ url_for('revista', titulo=revista.titulo) if revista.titulo is defined else '#' }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-info-circle"></i> Detalles
-                                </a>
-                                <a href="{{ url_for('eliminar_favorito', titulo=revista.titulo) if revista.titulo is defined else '#' }}" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}    
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>
-            No tiene revistas favoritas guardadas. Explore el catálogo y agregue revistas a sus favoritos.
-        </div>
-        <div class="text-center mt-4">
-            <a href="{{ url_for('explorar') }}" class="btn btn-primary">
-                <i class="fas fa-search me-2"></i> Explorar Revistas
-            </a>
-        </div>
-        {% endif %}
-    </div>
+<div class="container mt-4">
+    <h2 class="mb-4">Mis revistas favoritas</h2>
+
+    {% if favoritos %}
+    <ul class="list-group">
+        {% for revista in favoritos %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <a href="{{ url_for('revista', titulo=revista.titulo) }}"><strong>{{ revista.titulo }}</strong></a><br>
+                <small>H-Index: {{ revista.h_index }}</small>
+            </div>
+            <a href="{{ url_for('eliminar_favorito', titulo=revista.titulo) }}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">No has añadido revistas a tus favoritos aún.</p>
+    {% endif %}
 </div>
 {% endblock %}
